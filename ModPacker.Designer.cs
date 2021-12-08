@@ -58,6 +58,9 @@
             this.modNotesTextBox = new System.Windows.Forms.TextBox();
             this.panel4 = new System.Windows.Forms.Panel();
             this.modNotesLabel = new System.Windows.Forms.Label();
+            this.macLabel = new System.Windows.Forms.Label();
+            this.macButton = new System.Windows.Forms.Button();
+            this.macCheckBox = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -72,7 +75,7 @@
             this.panel1.Controls.Add(this.ModButton);
             this.panel1.Controls.Add(this.OriginalLabel);
             this.panel1.Controls.Add(this.OriginalButton);
-            this.panel1.Location = new System.Drawing.Point(309, 210);
+            this.panel1.Location = new System.Drawing.Point(312, 231);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(291, 86);
             this.panel1.TabIndex = 0;
@@ -204,8 +207,11 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.macLabel);
             this.panel3.Controls.Add(this.linuxLabel);
             this.panel3.Controls.Add(this.linuxButton);
+            this.panel3.Controls.Add(this.macButton);
+            this.panel3.Controls.Add(this.macCheckBox);
             this.panel3.Controls.Add(this.saveTextBox);
             this.panel3.Controls.Add(this.linuxCheckBox);
             this.panel3.Controls.Add(this.winSaveButton);
@@ -217,7 +223,7 @@
             this.panel3.Controls.Add(this.MusicCheckBox);
             this.panel3.Location = new System.Drawing.Point(309, 3);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(291, 201);
+            this.panel3.Size = new System.Drawing.Size(291, 225);
             this.panel3.TabIndex = 2;
             // 
             // linuxLabel
@@ -312,6 +318,7 @@
             this.YYCCheckBox.TabIndex = 4;
             this.YYCCheckBox.Text = "Uses the YoYo Compiler";
             this.YYCCheckBox.UseVisualStyleBackColor = true;
+            this.YYCCheckBox.CheckedChanged += new System.EventHandler(this.YYCCheckBox_CheckedChanged);
             // 
             // SaveCheckBox
             // 
@@ -341,7 +348,7 @@
             this.modNotesTextBox.Multiline = true;
             this.modNotesTextBox.Name = "modNotesTextBox";
             this.modNotesTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.modNotesTextBox.Size = new System.Drawing.Size(284, 198);
+            this.modNotesTextBox.Size = new System.Drawing.Size(284, 221);
             this.modNotesTextBox.TabIndex = 3;
             // 
             // panel4
@@ -350,7 +357,7 @@
             this.panel4.Controls.Add(this.modNotesTextBox);
             this.panel4.Location = new System.Drawing.Point(12, 80);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(291, 216);
+            this.panel4.Size = new System.Drawing.Size(291, 237);
             this.panel4.TabIndex = 4;
             // 
             // modNotesLabel
@@ -362,11 +369,43 @@
             this.modNotesLabel.TabIndex = 4;
             this.modNotesLabel.Text = "Mod notes:";
             // 
+            // macLabel
+            // 
+            this.macLabel.AutoSize = true;
+            this.macLabel.Location = new System.Drawing.Point(148, 207);
+            this.macLabel.Name = "macLabel";
+            this.macLabel.Size = new System.Drawing.Size(137, 13);
+            this.macLabel.TabIndex = 21;
+            this.macLabel.Text = "Modded Mac game loaded!";
+            this.macLabel.Visible = false;
+            // 
+            // macButton
+            // 
+            this.macButton.Enabled = false;
+            this.macButton.Location = new System.Drawing.Point(4, 202);
+            this.macButton.Name = "macButton";
+            this.macButton.Size = new System.Drawing.Size(143, 23);
+            this.macButton.TabIndex = 20;
+            this.macButton.Text = "Load modded Mac .zip";
+            this.macButton.UseVisualStyleBackColor = true;
+            this.macButton.Click += new System.EventHandler(this.macButton_Click);
+            // 
+            // macCheckBox
+            // 
+            this.macCheckBox.AutoSize = true;
+            this.macCheckBox.Location = new System.Drawing.Point(5, 184);
+            this.macCheckBox.Name = "macCheckBox";
+            this.macCheckBox.Size = new System.Drawing.Size(92, 17);
+            this.macCheckBox.TabIndex = 19;
+            this.macCheckBox.Text = "Supports Mac";
+            this.macCheckBox.UseVisualStyleBackColor = true;
+            this.macCheckBox.CheckedChanged += new System.EventHandler(this.macCheckBox_CheckedChanged);
+            // 
             // ModPacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(615, 309);
+            this.ClientSize = new System.Drawing.Size(615, 329);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
@@ -374,8 +413,8 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(631, 348);
-            this.MinimumSize = new System.Drawing.Size(631, 348);
+            this.MaximumSize = new System.Drawing.Size(631, 368);
+            this.MinimumSize = new System.Drawing.Size(631, 368);
             this.Name = "ModPacker";
             this.Text = "AM2R ModPacker";
             this.panel1.ResumeLayout(false);
@@ -421,6 +460,9 @@
         private System.Windows.Forms.TextBox modNotesTextBox;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label modNotesLabel;
+        private System.Windows.Forms.Label macLabel;
+        private System.Windows.Forms.Button macButton;
+        private System.Windows.Forms.CheckBox macCheckBox;
     }
 }
 

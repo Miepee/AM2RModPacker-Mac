@@ -20,9 +20,9 @@ namespace AM2R_ModPacker
     {
         private static readonly string VERSION = "2.0.3";
         private static readonly string ORIGINAL_MD5 = "f2b84fe5ba64cb64e284be1066ca08ee";
-        private bool isOriginalLoaded, isModLoaded, isApkLoaded, isLinuxLoaded;
-        private string localPath, originalPath, modPath, apkPath, linuxPath;
-        private static readonly string[] DATAFILES_BLACKLIST = { "data.win", "AM2R.exe", "D3DX9_43.dll", "game.unx" };
+        private bool isOriginalLoaded, isModLoaded, isApkLoaded, isLinuxLoaded, isMacLoaded;
+        private string localPath, originalPath, modPath, apkPath, linuxPath, macPath;
+        private static readonly string[] DATAFILES_BLACKLIST = { "data.win", "AM2R.exe", "D3DX9_43.dll", "game.unx", "game.ios" };
         private static string saveFilePath = null;
         private ModProfileXML profile;
         public ModPacker()
@@ -33,12 +33,14 @@ namespace AM2R_ModPacker
             isModLoaded = false;
             isApkLoaded = false;
             isLinuxLoaded = false;
+            isMacLoaded = false;
 
             localPath = Directory.GetCurrentDirectory();
             originalPath = "";
             modPath = "";
             linuxPath = "";
             apkPath = "";
+            macPath = "";
 
             Text = "AM2R ModPacker " + VERSION;
         }
@@ -115,6 +117,24 @@ namespace AM2R_ModPacker
                 }
 
                 CreateModPack("Linux", linuxPath, output);
+            }
+
+            if (macCheckBox.Checked)
+            {
+                using (SaveFileDialog saveFile = new SaveFileDialog { RestoreDirectory = true, Title = "Save Mac mod profile", Filter = "zip files (*.zip)|*.zip", AddExtension = true })
+                {
+                    if (saveFile.ShowDialog() == DialogResult.OK)
+                    {
+                        output = saveFile.FileName;
+                    }
+                    else
+                    {
+                        CreateLabel.Text = "Mod packaging aborted!";
+                        return;
+                    }
+                }
+
+                CreateModPack("Mac", macPath, output);
             }
 
             CreateLabel.Text = "Mod package(s) created!";
@@ -234,6 +254,28 @@ namespace AM2R_ModPacker
                 CreatePatch(tempOriginalPath + "\\data.win", tempModPath + "\\assets\\game.unx", tempProfilePath + "\\game.xdelta");
                 CreatePatch(tempOriginalPath + "\\AM2R.exe", tempModPath + "\\" + runnerName, tempProfilePath + "\\AM2R.xdelta");
             }
+            else if (profile.OperatingSystem == "Mac")
+            {
+                if (!File.Exists(tempModPath + "/AM2R.app/Contents/MacOS/Mac_Runner"))
+                {
+                    var result = MessageBox.Show("Modded Mac game not found, make sure it's not placed in any subfolders.\nCreated profile will likely not be installable, are you sure you want to continue?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (result != DialogResult.Yes)
+                        AbortPatch();
+                }
+
+                if (File.Exists(tempModPath + "profile.xml"))
+                {
+                    var result = MessageBox.Show("profile.xml found. This file is used by the AM2RLauncher to determine profile stats and its inclusion may make the profile uninstallable. Are you sure you want to continue?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (result != DialogResult.Yes)
+                        AbortPatch();
+                }
+
+                CreatePatch(tempOriginalPath + "\\data.win", tempModPath + "\\AM2R.app\\Contents\\Resources\\game.ios", tempProfilePath + "\\game.xdelta");
+                CreatePatch(tempOriginalPath + "\\AM2R.exe", tempModPath + "\\AM2R.app\\Contents\\MacOS\\Mac_Runner", tempProfilePath + "\\AM2R.xdelta");
+
+                // Copy plist over for custom title name
+                File.Copy(tempModPath + "\\AM2R.app\\Contents\\Info.plist", tempProfilePath + "\\Info.plist");
+            }
 
             // Create game.droid patch and wrapper if Android is supported
             if (profile.Android)
@@ -333,6 +375,8 @@ namespace AM2R_ModPacker
             DirectoryInfo dinfo = new DirectoryInfo(tempModPath);
             if (profile.OperatingSystem == "Linux")
                 dinfo = new DirectoryInfo(tempModPath + "\\assets");
+            else if (profile.OperatingSystem == "Mac")
+                dinfo = new DirectoryInfo(tempModPath + "\\AM2R.app\\Contents\\Resources");
 
             Directory.CreateDirectory(tempProfilePath + "\\files_to_copy");
 
@@ -346,7 +390,7 @@ namespace AM2R_ModPacker
                 // Get list of 1.1's music files
                 string[] musFiles = Directory.GetFiles(tempOriginalPath, "*.ogg").Select(file => Path.GetFileName(file)).ToArray();
 
-                if (profile.OperatingSystem == "Linux")
+                if (profile.OperatingSystem == "Linux" || profile.OperatingSystem == "Mac")
                     musFiles = Directory.GetFiles(tempOriginalPath, "*.ogg").Select(file => Path.GetFileName(file).ToLower()).ToArray();
 
 
@@ -420,6 +464,13 @@ namespace AM2R_ModPacker
             {
                 profile.SaveLocation = profile.SaveLocation.Replace("%localappdata%", "~/.config");
             }
+            else if (operatingSystem == "Mac")
+            {
+                if (profile.SaveLocation.Contains("%localappdata%/AM2R"))
+                    profile.SaveLocation = profile.SaveLocation.Replace("%localappdata%/AM2R", "~/Library/Application Support/com.yoyogames.am2r");
+                else
+                    profile.SaveLocation = "~/Library/Application Support/com.yoyogames." + new DirectoryInfo(profile.SaveLocation).Name.ToLower();
+            }
         }
 
         private void AbortPatch()
@@ -452,6 +503,40 @@ namespace AM2R_ModPacker
         private void linuxCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             linuxButton.Enabled = linuxCheckBox.Checked;
+            UpdateCreateButton();
+        }
+
+        private void YYCCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (YYCCheckBox.Checked)
+            {
+                macCheckBox.Checked = false;
+                macLabel.Visible = false;
+                macPath = "";
+            }
+        }
+
+        private void macCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!YYCCheckBox.Checked)
+            {
+                macButton.Enabled = macCheckBox.Checked;
+                UpdateCreateButton();
+            }
+            else if (macCheckBox.Checked)
+            {
+                MessageBox.Show("YoYoCompiler isn't supported with Mac!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                macCheckBox.Checked = false;
+            }
+        }
+
+        private void macButton_Click(object sender, EventArgs e)
+        {
+            // Open window to select modded Mac .zip
+            (isMacLoaded, macPath) = SelectFile("Please select your custom Mac AM2R .zip", "zip", "zip archives (*.zip)|*.zip");
+
+            macLabel.Visible = isMacLoaded;
+
             UpdateCreateButton();
         }
 
@@ -519,7 +604,8 @@ namespace AM2R_ModPacker
             if (isOriginalLoaded && 
                 isModLoaded && 
                 (!AndroidCheckBox.Checked || isApkLoaded) && 
-                (!linuxCheckBox.Checked || isLinuxLoaded) && 
+                (!linuxCheckBox.Checked || isLinuxLoaded) &&
+                (!macCheckBox.Checked || isMacLoaded) &&
                 (!SaveCheckBox.Checked || saveTextBox.Text != ""))
             {
                 CreateButton.Enabled = true;

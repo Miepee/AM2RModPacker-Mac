@@ -1,6 +1,10 @@
 # AM2RModPacker
 Mod packaging toolchain for [AM2RLauncher](https://github.com/AM2R-Community-Developers/AM2RLauncher) mods.
 
+```diff
+- MAC PORTING IS NOT OFFICIALLY SUPPORTED BY THE COMMUNITY DEVELOPERS - 
+```
+
 This is for modcreators who wish to make their mods usable with the [AM2RLauncher](https://github.com/AM2R-Community-Developers/AM2RLauncher).
 It currently supports creating Windows, Linux and Android mods.
 
