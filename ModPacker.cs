@@ -467,9 +467,9 @@ namespace AM2R_ModPacker
             else if (operatingSystem == "Mac")
             {
                 if (profile.SaveLocation.Contains("%localappdata%/AM2R"))
-                    profile.SaveLocation = profile.SaveLocation.Replace("%localappdata%/AM2R", "~/Library/Application Scripts/com.yoyogames.am2r");
+                    profile.SaveLocation = profile.SaveLocation.Replace("%localappdata%/AM2R", "~/Library/Application Support/com.yoyogames.am2r");
                 else
-                    profile.SaveLocation = "~/Library/Application Scripts/com.yoyogames." + new DirectoryInfo(profile.SaveLocation).Name.ToLower();
+                    profile.SaveLocation = "~/Library/Application Support/com.yoyogames." + new DirectoryInfo(profile.SaveLocation).Name.ToLower();
             }
         }
 
