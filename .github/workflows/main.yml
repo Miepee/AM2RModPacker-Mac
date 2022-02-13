@@ -14,7 +14,7 @@ jobs:
         configuration: [Release]
         include:
           - os: windows-latest
-            COMMAND: AM2R ModPacker.sln -c Release -r win-x86 -o builds/win
+            COMMAND: "AM2R ModPacker.sln" -c Release -r win-x86 -o builds/win
             ARTIFACT: builds/win
     runs-on: ${{ matrix.os }}
     
