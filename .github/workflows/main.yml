@@ -29,6 +29,10 @@ jobs:
        
     #- name: Setup NuGet
     #  uses: NuGet/setup-nuget@v1.0.2
+    - name: Set up Visual Studio shell
+      uses: egor-tensin/vs-shell@v2
+      with:
+        arch: x86
     - name: Restore dependencies
       run: dotnet restore "AM2R ModPacker.sln"
     - name: Build
