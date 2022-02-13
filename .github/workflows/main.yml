@@ -39,7 +39,7 @@ jobs:
       run: msbuild "AM2R ModPacker.sln" -t:restore,build -p:RestorePackagesConfig=true
     # Steps for uploading artifacts.
     - name: Zip to Archive
-      run: 7z a -tzip ${{ matrix.os }}.zip ./${{ matrix.ARTIFACT }}
+      run: 7z a -tzip ${{ matrix.os }}.zip ./AM2RModPacker-Mac\bin\Debug\
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1.0.0
       with:
