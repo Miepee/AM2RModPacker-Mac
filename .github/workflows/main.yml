@@ -24,10 +24,15 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
+    - name: Setup MSBuild Path
+      uses: warrenbuckley/Setup-MSBuild@v1
+       
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.2
     - name: Restore dependencies
       run: dotnet restore "AM2R ModPacker.sln"
     - name: Build
-      run: dotnet publish "AM2R ModPacker.sln" -c Release -r win-x86 -o builds/win -c "${{ matrix.configuration }}"
+      run: msbuild "AM2R ModPacker.sln"
     # Steps for uploading artifacts.
     - name: Zip to Archive
       run: 7z a -tzip ${{ matrix.os }}.zip ./${{ matrix.ARTIFACT }}
