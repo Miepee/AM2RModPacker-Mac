@@ -1,0 +1,46 @@
+name: Build and Upload
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore: 
+      - 'README.md'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        configuration: [Release]
+        include:
+          - os: ubuntu-latest
+            COMMAND: AM2RModPacker.csproj -c Release -p:PublishSingleFile=true -p:DebugType=embedded -r ubuntu.18.04-x64 --no-self-contained -o builds/linux
+            ARTIFACT: builds/linux
+          - os: macOS-latest
+            COMMAND: AM2RModPacker.csproj -c Release -r osx-x64 --no-self-contained -o builds/macos
+            ARTIFACT: builds/macos
+          - os: windows-latest
+            COMMAND: AM2RModPacker.csproj -c Release -r win-x86 -o builds/win
+            ARTIFACT: builds/win
+    runs-on: ${{ matrix.os }}
+    
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet publish ${{ matrix.COMMAND }} -c "${{ matrix.configuration }}"
+    # Steps for uploading artifacts.
+    - name: Zip to Archive
+      run: 7z a -tzip ${{ matrix.os }}.zip ./${{ matrix.ARTIFACT }}
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: ${{ matrix.os }}
+        path: ${{ matrix.os }}.zip
