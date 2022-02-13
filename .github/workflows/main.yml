@@ -1,0 +1,47 @@
+name: Build and Upload
+
+on:
+  push:
+    paths-ignore: 
+      - 'README.md'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        configuration: [Release]
+        include:
+          - os: windows-latest
+            ARTIFACT: builds/win
+    runs-on: ${{ matrix.os }}
+    
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    #- name: Setup MSBuild Path
+    #  uses: warrenbuckley/Setup-MSBuild@v1
+       
+    #- name: Setup NuGet
+    #  uses: NuGet/setup-nuget@v1.0.2
+    - name: Set up Visual Studio shell
+      uses: egor-tensin/vs-shell@v2
+      with:
+        arch: x86
+    - name: Restore dependencies
+      run: dotnet restore "AM2R ModPacker.sln"
+    - name: Build
+      run: msbuild "AM2R ModPacker.sln" -t:restore,build -p:RestorePackagesConfig=true
+    # Steps for uploading artifacts.
+    - name: Zip to Archive
+      run: 7z a -tzip ${{ matrix.os }}.zip ./bin\Debug\
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: ${{ matrix.os }}
+        path: ${{ matrix.os }}.zip
