@@ -36,7 +36,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore "AM2R ModPacker.sln"
     - name: Build
-      run: msbuild "AM2R ModPacker.sln"
+      run: msbuild "AM2R ModPacker.sln" -t:restore,build -p:RestorePackagesConfig=true
     # Steps for uploading artifacts.
     - name: Zip to Archive
       run: 7z a -tzip ${{ matrix.os }}.zip ./${{ matrix.ARTIFACT }}
