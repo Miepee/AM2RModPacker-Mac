@@ -14,7 +14,6 @@ jobs:
         configuration: [Release]
         include:
           - os: windows-latest
-            COMMAND: AM2R\ ModPacker.sln -c Release -r win-x86 -o builds/win
             ARTIFACT: builds/win
     runs-on: ${{ matrix.os }}
     
@@ -28,7 +27,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore "AM2R ModPacker.sln"
     - name: Build
-      run: dotnet publish ${{ matrix.COMMAND }} -c "${{ matrix.configuration }}"
+      run: dotnet publish "AM2R ModPacker.sln" -c Release -r win-x86 -o builds/win -c "${{ matrix.configuration }}"
     # Steps for uploading artifacts.
     - name: Zip to Archive
       run: 7z a -tzip ${{ matrix.os }}.zip ./${{ matrix.ARTIFACT }}
